@@ -37,6 +37,7 @@ RUN apt-get install -y apt-utils && \
         python3-dev \
         python3-pip \
         python3-distutils-extra \
+	libx11-xcb-dev \
 	curl \
     # Clean up!
     && rm -rf /var/lib/apt/lists/*
