@@ -63,6 +63,9 @@ RUN echo "#installing pip aws ebcli" &&  \
     pip install awscli --upgrade && \
     pip install awsebcli --upgrade
 
+RUN echo "#installing jq " &&  \
+    apt-get install -y jq
+
 # Maven related
 # -------------
 ENV MAVEN_VERSION 3.5.3
