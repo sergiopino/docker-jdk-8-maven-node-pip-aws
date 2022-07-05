@@ -1,4 +1,4 @@
-# docker-jdk-8-maven-node-pip-aws
-Ubuntu 16.04 + Oracle Java 8 + Maven 3.5.0 + Node + Python + AWS
+# docker-jdk-11-maven-node-pip-aws
+Ubuntu 20.04 + JDK11 + Maven 3.8 + Node 16 + Python + AWS
 
-Dockerized Java 8, Maven 3.5.3, NodeJs PIP, Aws cli, awsebcli for Full stack Java web app builds.
+Dockerized Java 11, Maven 3.8.3, NodeJs 16.X PIP 2, Aws cli, awsebcli for Full stack Java web app builds.
