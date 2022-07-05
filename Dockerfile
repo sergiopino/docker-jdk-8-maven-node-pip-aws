@@ -1,26 +1,15 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 LABEL maintainer="Sergio Pino <srmpino@gmail.com>"
 
 
 ENV DEBIAN_FRONTEND noninteractive
-ENV JAVA_HOME       /usr/lib/jvm/java-8-oracle
+ENV JAVA_HOME       /usr/lib/jvm/open-jdk
 ENV LANG            en_US.UTF-8
 ENV LC_ALL          en_US.UTF-8
 
 #Jdk 8
-RUN apt-get update && \
-  apt-get install -y --no-install-recommends locales && \
-  locale-gen en_US.UTF-8 && \
-  apt-get dist-upgrade -y && \
-  apt-get --purge remove openjdk* && \
-  echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections && \
-  echo "deb http://ppa.launchpad.net/webupd8team/java/ubuntu xenial main" > /etc/apt/sources.list.d/webupd8team-java-trusty.list && \
-  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886 && \
-  apt-get update && \
-  apt-get install -y --no-install-recommends oracle-java8-installer oracle-java8-set-default && \
-  apt-get clean all
-
+RUN apt-get update && apt-get install -y openjdk-11-jdk
 
 # Using apt-get due to warning with apt:
 # WARNING: apt does not have a stable CLI interface. Use with caution in scripts.
@@ -46,7 +35,7 @@ RUN apt-get install -y apt-utils && \
 # ------------
 
 RUN echo "# Installing Nodejs" && \
-    curl -sL https://deb.nodesource.com/setup_4.x | bash - && \
+    curl -sL https://deb.nodesource.com/setup_16.x | bash - && \
     apt-get install nodejs build-essential -y && \
     npm set strict-ssl false && \
     npm install -g npm@latest && \
@@ -55,23 +44,36 @@ RUN echo "# Installing Nodejs" && \
     npm install -g n && \
     n stable
 
+RUN echo "#installing software common" && \
+    apt-get update -y  && \
+    apt-get install -y software-properties-common
 
-RUN echo "#installing pip aws ebcli" &&  \
-    apt-get install -y python-dev && \
-    apt-get install -y python-pip && \
-    pip install awsebcli --upgrade && \
-    pip install awscli --upgrade && \
-    pip install awsebcli --upgrade
+RUN echo "#installing pip aws ebcli" && \
+    add-apt-repository universe && \
+    apt-get update -y  && \
+    apt-get install -y python2 && \
+    curl https://bootstrap.pypa.io/pip/2.7/get-pip.py --output get-pip.py && \
+    python2 get-pip.py && \
+    pip3 install awsebcli botocore==1.19.63 --upgrade
+
+#        pip install awsebcli --upgrade && \
+#    pip install awscli --upgrade && \
+#    pip install awsebcli --upgrade
 
 RUN echo "#installing jq " &&  \
     apt-get install -y jq
 
 # Maven related
 # -------------
-ENV MAVEN_VERSION 3.5.3
+ENV MAVEN_VERSION 3.8.6
 ENV MAVEN_ROOT /var/lib/maven
 ENV MAVEN_HOME $MAVEN_ROOT/apache-maven-$MAVEN_VERSION
 ENV MAVEN_OPTS -Xms256m -Xmx512m
+
+
+RUN echo "#installing wget" && \
+    apt-get update -y  && \
+    apt-get install -y wget
 
 RUN echo "# Installing Maven " && echo ${MAVEN_VERSION} && \
     wget --no-verbose -O /tmp/apache-maven-$MAVEN_VERSION.tar.gz \
@@ -82,6 +84,3 @@ RUN echo "# Installing Maven " && echo ${MAVEN_VERSION} && \
     rm -f /tmp/apache-maven-$MAVEN_VERSION.tar.gz
 
 VOLUME /var/lib/maven
-
-
-
